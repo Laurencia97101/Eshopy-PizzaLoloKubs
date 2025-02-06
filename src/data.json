@@ -1,0 +1,21 @@
+{
+    "boissons": [
+      {
+        "nom": "eau",
+        "stock": 0
+      },
+      {
+        "nom": "coca",
+        "stock": 2
+      },
+      {
+        "nom": "kilibibi",
+        "stock": 6
+      },
+      {
+        "nom": "royalsoda",
+        "stock": 4
+      }
+    ]
+  }
+  
