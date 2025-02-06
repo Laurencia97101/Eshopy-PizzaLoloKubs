@@ -1,5 +1,6 @@
-import { Boisson } from './Components/Boisson/Boisson'
-import React, { useState, useEffect } from 'react';
+// import { Boisson } from './Components/Boisson/Boisson';
+import { Adresse } from './Components/Adresse/Adresse';
+import { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
@@ -39,7 +40,7 @@ function App() {
           </div>
         ))}
       </div>
-      <Boisson />
+      {/* <Boisson /> */}
       <div className="order-summary">
         <h2>Commande Sélectionnée</h2>
         {selectedOrders.map((product) => (
@@ -50,6 +51,8 @@ function App() {
         ))}
         <h2>Montant Total : {totalAmount.toFixed(2)} €</h2>
       </div>
+
+      <Adresse />
     </div>
   );
 }

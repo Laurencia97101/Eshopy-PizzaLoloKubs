@@ -1,48 +1,67 @@
+
+import './Boisson.css';
+import { useState, useEffect } from 'react';
+
 function Boisson() {
-    fetch('./src/data.json')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
+  const [boissons, setBoissons] = useState([]);
+  const [selectedDrinks, setSelectedDrinks] = useState([]);
+  const [totalAmount, setTotalAmount] = useState(0);
+
+  useEffect(() => {
+    fetch('./data.json')
+      .then(response => response.json())
       .then(data => {
-        console.log("Données JSON chargées:", data);
-        
-        var numChoisi;
-        var boissons = data.boissons;
-  
-        window.alert("Choisissez votre boisson : 1=eau 2=coca 3=kilibibi 4=royalsoda");
-        numChoisi = Number(window.prompt('Enter a value for numChoisi'));
-  
-        function trouverBoisson(index) {
-          if (boissons[index].stock > 0) {
-            boissons[index].stock -= 1;
-            window.alert("Voici votre boisson");
-          } else {
-            window.alert("Stock insuffisant");
-          }
-        }
-  
-        switch (numChoisi) {
-          case 1:
-            trouverBoisson(0); // eau
-            break;
-          case 2:
-            trouverBoisson(1); // coca
-            break;
-          case 3:
-            trouverBoisson(2); // kilibibi
-            break;
-          case 4:
-            trouverBoisson(3); // royalsoda
-            break;
-          default:
-            window.alert("Choix invalide");
-        }
+        setBoissons(data.boissons);
       })
-    //   .catch(error => {
-    //     console.error('Erreur lors du chargement des données JSON:', error);
-    //   });
-  }
-  export {Boisson}
+      .catch(error => {
+        console.error('Erreur lors du chargement des données JSON:', error);
+      });
+  }, []);
+
+  const handleDrinkSelection = (index) => {
+    const selectedDrink = boissons[index];
+    if (selectedDrink.stock > 0) {
+      setBoissons(boissons.map((boisson, i) => i === index ? { ...boisson, stock: boisson.stock - 1 } : boisson));
+      setSelectedDrinks([...selectedDrinks, selectedDrink]);
+      setTotalAmount(totalAmount + selectedDrink.price);
+    } else {
+      alert("Stock insuffisant");
+    }
+  };
+
+  const handleRemoveDrink = (index) => {
+    const drinkToRemove = selectedDrinks[index];
+    setBoissons(boissons.map((boisson) =>
+      boisson.id === drinkToRemove.id ? { ...boisson, stock: boisson.stock + 1 } : boisson
+    ));
+    setSelectedDrinks(selectedDrinks.filter((_, i) => i !== index));
+    setTotalAmount(totalAmount - drinkToRemove.price);
+  };
+
+  return (
+    <div className="Boisson">
+      <h1>Menu des Boissons</h1>
+      <div className="cards-container">
+        {boissons.map((boisson, index) => (
+          <div key={boisson.nom} className="card" onClick={() => handleDrinkSelection(index)}>
+            <h5>{boisson.nom}</h5>
+            <p>Stock: {boisson.stock}</p>
+            <p>Prix: {boisson.price.toFixed(2)} €</p>
+          </div>
+        ))}
+      </div>
+      <h2>Commande Sélectionnée</h2>
+      <div className="selected-drinks">
+        {selectedDrinks.map((drink, index) => (
+          <div key={index} className="selected-drink">
+            <p>{drink.nom} - {drink.price.toFixed(2)} €</p>
+            <button onClick={() => handleRemoveDrink(index)}>Retirer</button>
+          </div>
+        ))}
+      </div>
+      <h2>Montant Total: {totalAmount.toFixed(2)} €</h2>
+    </div>
+  );
+}
+
+export {Boisson};
